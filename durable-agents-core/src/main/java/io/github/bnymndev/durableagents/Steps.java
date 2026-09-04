@@ -71,6 +71,9 @@ public interface Steps {
 	 */
 	ApprovalStepBuilder approval(String role, Duration timeout);
 
+	/** Same as {@link #approval(String, Duration)} with {@code durable-agents.approval.default-timeout}. */
+	ApprovalStepBuilder approval(String role);
+
 	/** Extends the lease of the current run. Call it from inside long-running steps. */
 	void heartbeat();
 

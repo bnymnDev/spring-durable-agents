@@ -177,6 +177,11 @@ public final class DefaultSteps implements Steps {
 	}
 
 	@Override
+	public ApprovalStepBuilder approval(String role) {
+		return new ApprovalBuilder(role, this.ctx.settings().defaultApprovalTimeout());
+	}
+
+	@Override
 	public void heartbeat() {
 		this.activeRun.heartbeat();
 	}
