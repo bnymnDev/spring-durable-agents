@@ -67,35 +67,37 @@ No proxy on your agent class, no bytecode weaving, no broker, no server. One sta
 
 ## See it work
 
-Everything below is produced by the test suite of this repository (`StarterEndToEndTests`,
-`RefundAgentTests`); nothing is mocked beyond the model, which answers from a script.
+Everything below is recorded by the test suite of this repository (`DurableAgentTestSliceTests`,
+`RefundAgentTests`, `RunEngineTests`). The model is the scripted `FakeChatModel`, so the model name
+and token counts are its defaults; everything else is the real engine on the in-memory store. Ids are
+shortened.
 
 **A run crashes after the model answered. The next instance does not ask again.**
 
 ```
-22:06:31.412 [durable-agent-3] [01J8XQ2D…] INFO  RunEngine  Run 01J8XQ2D… of agent 'ticket-triage' started
-22:06:31.988 [durable-agent-3] [01J8XQ2D…] ERROR RunEngine  Run 01J8XQ2D… crashed; leaving it RUNNING with an expired lease for resume
-22:06:42.104 [durable-agents-1]              INFO  RunReaper  Resumed run 01J8XQ2D… of agent 'ticket-triage' after its lease expired
-22:06:42.131 [durable-agent-7] [01J8XQ2D…] INFO  RunEngine  Run 01J8XQ2D… suspended at 01J8XQ2D…:propose:0: Waiting for approval by SUPPORT_LEAD
+INFO  RunEngine  Run 01M1Q8… of agent 'ticket-triage' started
+ERROR RunEngine  Run 01M1Q8… crashed; leaving it RUNNING with an expired lease for resume
+INFO  RunEngine  Run 01M1Q8… of agent 'ticket-triage' resumed
+INFO  RunEngine  Run 01M1Q8… suspended at 01M1Q8…:apply:0: Waiting for approval by SUPPORT_LEAD
 ```
 
-`agent_step` afterwards. One model call, one lookup, one approval waiting; the model was called once.
+`agent_step` at that point. The model was called once; the approval is waiting.
 
 | step_key | kind | status | attempt | model | tokens_in | tokens_out |
 |---|---|---|---|---|---|---|
 | `…:classify:0` | LLM | COMPLETED | 1 | | | |
-| `…:classify:0/llm:0` | LLM | COMPLETED | 1 | gpt-4o-mini | 412 | 37 |
+| `…:classify:0/llm:0` | LLM | COMPLETED | 1 | fake-chat-model | 10 | 5 |
 | `…:triageSteps.findSimilar:0` | STEP | COMPLETED | 1 | | | |
-| `…:propose:0` | APPROVAL | PENDING_APPROVAL | 0 | | | |
+| `…:apply:0` | APPROVAL | PENDING_APPROVAL | 0 | | | |
 
 **Finance rejects a refund. The reservation that was already made is undone, once.**
 
 ```
 step                              kind          status
 assess                            LLM           COMPLETED
-assess/llm:0                      LLM           COMPLETED      gpt-4o-mini  588/61
-assess/llm:0/tool.orders_get.9f…  TOOL          COMPLETED      {"orderNumber":"10044"}
+assess/llm:0                      LLM           COMPLETED      fake-chat-model  10/5
 refundSteps.reserve               STEP          COMPLETED      reservation 7c1e…
+refundSteps.reserve/sideEffect    SIDE_EFFECT   COMPLETED      reservation:10044
 approveRefund                     APPROVAL      FAILED         rejected by finance: no proof
 compensate:refundSteps.reserve    COMPENSATION  COMPLETED
 ```

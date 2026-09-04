@@ -203,6 +203,7 @@ public final class RunEngine implements AgentRuns, AutoCloseable {
 				TimeUnit.MILLISECONDS));
 		DefaultSteps steps = new DefaultSteps(id, def.name(), run.correlationId(), this.ctx, activeRun);
 		StepsHolder.set(steps);
+		logger.info("Run " + id + " of agent '" + def.name() + "' " + (resumed ? "resumed" : "started"));
 		this.ctx.publisher().publishEvent(new RunStartedEvent(id, def.name(), resumed));
 		this.runListeners.forEach((l) -> l.onRunStarted(id, def.name(), resumed));
 		RunResult result;
@@ -239,6 +240,7 @@ public final class RunEngine implements AgentRuns, AutoCloseable {
 	}
 
 	private RunResult complete(RunRecord run, @Nullable Object output) {
+		logger.info("Run " + run.id() + " of agent '" + run.agentName() + "' completed");
 		Instant now = this.ctx.clock().instant();
 		this.runs.update(run.withOutput(this.ctx.codec().encode(output), now));
 		this.ctx.publisher().publishEvent(new RunCompletedEvent(run.id(), run.agentName(), output));
@@ -246,6 +248,7 @@ public final class RunEngine implements AgentRuns, AutoCloseable {
 	}
 
 	private RunResult suspend(RunRecord run, RunSuspended suspended) {
+		logger.info("Run " + run.id() + " suspended at " + suspended.stepKey() + ": " + suspended.getMessage());
 		Instant now = this.ctx.clock().instant();
 		this.runs.update(run.withError(RunStatus.SUSPENDED, null, now).withLease(null, null, now));
 		this.ctx.publisher().publishEvent(new RunSuspendedEvent(run.id(), run.agentName(), suspended.stepKey(),
