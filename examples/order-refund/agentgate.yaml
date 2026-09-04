@@ -1,0 +1,28 @@
+# agentgate policy for the order-refund example.
+# shopware-mcp runs with --allow-write so that order_state_transition exists; agentgate decides what
+# the model may actually do with it, and records every call.
+version: 1
+
+upstreams:
+  - name: shopware
+    stdio: ["npx", "-y", "shopware-mcp", "--allow-write"]
+
+policy:
+  default: allow
+  loop_guard: { repeats: 10 }
+  budget: { calls_per_session: 200 }
+  rules:
+    - id: only-refund-transitions
+      tool: "shopware.order_state_transition"
+      when:
+        args.transition: { not_equals: "refund" }
+      action: deny
+      reason: "this agent may only move orders to refund"
+    - id: no-price-changes
+      tool: "shopware.product_update"
+      action: deny
+      reason: "refunds never touch products"
+    - id: no-stock-changes
+      tool: "shopware.stock_set"
+      action: deny
+      reason: "refunds never touch stock"

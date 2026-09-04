@@ -28,7 +28,8 @@ public class CrashSimulator implements StepListener {
 
 	@Override
 	public void onStepFinished(StepExecution step, Duration duration, @Nullable Throwable error) {
-		if (error == null && this.armed.compareAndSet(step.stepName(), null)) {
+		String current = this.armed.get();
+		if (error == null && current != null && current.equals(step.stepName()) && this.armed.compareAndSet(current, null)) {
 			throw new SimulatedCrash(step.stepName());
 		}
 	}

@@ -196,7 +196,7 @@ class DurableStepAdvisorTests {
 		private String ask(String text) {
 			ChatClient.ChatClientRequestSpec spec = this.chat.prompt().user(text);
 			if (this.tool != null) {
-				spec = spec.toolCallbacks(this.tool);
+				spec = spec.tools(this.tool);
 			}
 			return spec.call().content();
 		}
