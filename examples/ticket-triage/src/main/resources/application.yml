@@ -1,0 +1,49 @@
+spring:
+  application:
+    name: ticket-triage
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/triage}
+    username: ${DATABASE_USER:triage}
+    password: ${DATABASE_PASSWORD:triage}
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:gpt-4o-mini}
+          temperature: 0
+  security:
+    user:
+      name: ${APPROVER_USER:lead}
+      password: ${APPROVER_PASSWORD:lead}
+      roles: SUPPORT_LEAD
+  modulith:
+    events:
+      jdbc:
+        schema-initialization:
+          enabled: true
+
+durable-agents:
+  lease-duration: PT30S
+  reaper-interval: PT10S
+  retention: P30D
+  approval:
+    default-timeout: P1D
+  observability:
+    record-prompts: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,agents,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  pattern:
+    correlation: "[%X{runId:-}] "
