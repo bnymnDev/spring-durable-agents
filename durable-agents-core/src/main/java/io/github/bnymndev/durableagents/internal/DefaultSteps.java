@@ -223,9 +223,9 @@ public final class DefaultSteps implements Steps {
 	/** Executes one step according to {@code spec}. This is the single entry point for all step kinds. */
 	public <T extends @Nullable Object> T execute(StepSpec spec, Supplier<T> supplier) {
 		this.activeRun.checkCancelled();
-		String key = (spec.fixedKey() != null) ? this.runId + ":" + spec.fixedKey() : nextKey(spec.name());
 		Frame parentFrame = this.stack.peek();
 		String parentKey = (parentFrame != null) ? parentFrame.key : null;
+		String key = (spec.fixedKey() != null) ? this.runId + ":" + spec.fixedKey() : nextKey(parentKey, spec.name());
 		StepKind kind = (spec.kind() != null) ? spec.kind() : (parentKey == null ? StepKind.STEP : StepKind.CHILD);
 		if (parentKey == null && spec.replayGuard() && this.ctx.settings().strictReplay()) {
 			guardReplay(spec.name());
@@ -384,9 +384,15 @@ public final class DefaultSteps implements Steps {
 
 	// ---------------------------------------------------------------- helpers
 
-	private String nextKey(String name) {
-		int n = this.counters.merge(name, 1, Integer::sum) - 1;
-		return this.runId + ":" + name + ":" + n;
+	/**
+	 * Top-level keys are {@code runId:name:n}; keys of nested steps are scoped by their parent,
+	 * {@code parentKey/name:n}, so that children of a replayed parent never collide with children of
+	 * a later step.
+	 */
+	private String nextKey(@Nullable String parentKey, String name) {
+		String scope = (parentKey == null) ? this.runId + ":" + name : parentKey + "/" + name;
+		int n = this.counters.merge(scope, 1, Integer::sum) - 1;
+		return scope + ":" + n;
 	}
 
 	private void guardReplay(String name) {

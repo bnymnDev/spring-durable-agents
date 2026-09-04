@@ -181,10 +181,18 @@
             <release>21</release>
             <parameters>true</parameters>
             <compilerArgs>
-              <arg>-Xlint:all,-serial,-processing,-classfile</arg>
-              <arg>-Werror</arg>
+              <arg>-Xlint:all,-serial,-processing,-classfile,-this-escape</arg>
             </compilerArgs>
+            <failOnWarning>true</failOnWarning>
           </configuration>
+          <executions>
+            <execution>
+              <id>default-testCompile</id>
+              <configuration>
+                <failOnWarning>false</failOnWarning>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

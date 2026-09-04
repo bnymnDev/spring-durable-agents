@@ -9,7 +9,8 @@ import org.jspecify.annotations.Nullable;
  * The durable step API handed to {@link Agent#run(Object, Steps)}.
  *
  * <p>Every operation computes a deterministic step key {@code runId:name:n}, where {@code n} is the
- * number of previous calls with the same name in this run. A completed key is replayed from the
+ * number of previous calls with the same name in this run (a step started inside another step is
+ * keyed below its parent: {@code parentKey/name:n}). A completed key is replayed from the
  * store: the supplier is not executed and the stored value is returned. This is what makes a run
  * resumable, and it is why the code between steps has to be deterministic.
  */
