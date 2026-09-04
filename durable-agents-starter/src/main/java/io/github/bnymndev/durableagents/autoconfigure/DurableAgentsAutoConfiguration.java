@@ -16,10 +16,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
-import org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,8 +56,9 @@ import io.github.bnymndev.durableagents.spi.StepStore;
  * Autoconfiguration of the durable agents engine. Every bean is {@code @ConditionalOnMissingBean},
  * so an application can replace any part: the store, the codec, the executor, the clock.
  */
-@AutoConfiguration(after = { DataSourceAutoConfiguration.class, JacksonAutoConfiguration.class,
-		TaskExecutionAutoConfiguration.class })
+@AutoConfiguration(afterName = { "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
+		"org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
+		"org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration" })
 @ConditionalOnProperty(prefix = "durable-agents", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(DurableAgentsProperties.class)
 @Import({ DurableAgentsAutoConfiguration.JdbcStoreConfiguration.class,
