@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" role="img" aria-label="spring-durable-agents: durable execution for Spring AI agents. Crash, redeploy, resume.">
+  <rect width="1200" height="260" fill="#0d1117"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace">
+    <text x="60" y="108" font-size="54" font-weight="700" fill="#f0f6fc">spring-durable-agents</text>
+    <text x="60" y="156" font-size="24" fill="#9da7b3">Durable execution for Spring AI agents.</text>
+    <text x="60" y="192" font-size="24" fill="#9da7b3">Crash. Redeploy. Resume.</text>
+  </g>
+  <g transform="translate(860,58)" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15">
+    <rect x="0" y="0" width="280" height="150" rx="10" fill="#161b22" stroke="#30363d"/>
+    <text x="18" y="30" fill="#059669">✔ classify        LLM   412/37</text>
+    <text x="18" y="58" fill="#059669">✔ findSimilar     STEP  retry 2</text>
+    <text x="18" y="86" fill="#d97706">◔ propose         APPROVAL SUPPORT_LEAD</text>
+    <text x="18" y="114" fill="#6e7681">· apply           STEP</text>
+    <text x="18" y="140" fill="#8b949e">run 01J8X… suspended · lease released</text>
+  </g>
+  <rect x="0" y="252" width="1200" height="8" fill="#6db33f"/>
+</svg>

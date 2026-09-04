@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: order-refund
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/refund}
+    username: ${DATABASE_USER:refund}
+    password: ${DATABASE_PASSWORD:refund}
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: ${OPENAI_MODEL:gpt-4o-mini}
+          temperature: 0
+    mcp:
+      client:
+        enabled: true
+        type: SYNC
+        request-timeout: 30s
+        stdio:
+          connections:
+            shopware:
+              # agentgate in front of shopware-mcp: a policy decides what the model may do
+              command: agentgate
+              args: ["run", "--stdio", "--config", "agentgate.yaml"]
+  security:
+    user:
+      name: ${APPROVER_USER:finance}
+      password: ${APPROVER_PASSWORD:finance}
+      roles: FINANCE
+  modulith:
+    events:
+      jdbc:
+        schema-initialization:
+          enabled: true
+
+durable-agents:
+  approval:
+    default-timeout: P2D
+  observability:
+    record-prompts: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,agents,metrics

@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: refund
+      POSTGRES_USER: refund
+      POSTGRES_PASSWORD: refund
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U refund"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
