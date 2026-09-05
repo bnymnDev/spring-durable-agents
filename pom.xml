@@ -6,7 +6,7 @@
 
   <groupId>io.github.bnymndev</groupId>
   <artifactId>spring-durable-agents</artifactId>
-  <version>0.1.1</version>
+  <version>0.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>spring-durable-agents</name>
@@ -75,6 +75,8 @@
     <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
     <flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
     <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
+    <!-- -DautoPublish=true publishes in the Central Portal without the manual confirmation -->
+    <autoPublish>false</autoPublish>
   </properties>
 
   <dependencyManagement>
@@ -339,7 +341,8 @@
             <extensions>true</extensions>
             <configuration>
               <publishingServerId>central</publishingServerId>
-              <autoPublish>false</autoPublish>
+              <autoPublish>${autoPublish}</autoPublish>
+              <waitUntil>validated</waitUntil>
               <excludeArtifacts>
                 <artifact>ticket-triage</artifact>
                 <artifact>order-refund</artifact>
