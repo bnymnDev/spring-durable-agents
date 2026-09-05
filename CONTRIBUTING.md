@@ -48,11 +48,22 @@ wrapper fetches.
 
 ## Releasing
 
-```sh
-./mvnw versions:set -DnewVersion=0.1.0 -DgenerateBackupPoms=false
-git commit -am "chore: release 0.1.0" && git tag v0.1.0
-./mvnw -Prelease deploy      # needs the central server credentials and a GPG key
-```
+1. Set the version and merge to `main`:
+   ```sh
+   ./mvnw versions:set -DnewVersion=0.1.1 -DgenerateBackupPoms=false
+   git commit -am "chore: release 0.1.1" && git push
+   ```
+2. Run the **release** workflow on `main` with `version=0.1.1` (Actions → release → Run workflow). It
+   creates the tag, the GitHub release with jars and checksums, and deploys to GitHub Packages.
+   JitPack builds the tag on first request.
+3. Maven Central, from your machine, the same way as uuidulid:
+   ```sh
+   scripts/release-to-central.sh 0.1.1             # checks prerequisites, verifies, signs, uploads
+   scripts/release-to-central.sh 0.1.1 --publish   # ... and publishes without the portal click
+   ```
+   Needs `<server><id>central</id>` in `~/.m2/settings.xml` (Central Portal user token) and a GPG key.
+   Without `--publish`, confirm the deployment at https://central.sonatype.com/publishing/deployments.
+4. Bump `develop` to the next `-SNAPSHOT`.
 
-The `release` profile attaches sources and javadoc, signs everything and uploads to the Central
-Portal without auto-publishing; publish from the portal after a look. Examples are excluded.
+The `release` profile attaches sources and javadoc, signs everything and uploads through
+`central-publishing-maven-plugin`. Examples are excluded from deployment.
