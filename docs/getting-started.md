@@ -2,8 +2,10 @@
 
 ## 1. Add the starter
 
-Import the BOM once and leave the versions off the modules. All artifacts are on Maven Central
-under `io.github.bnymndev` (and on GitHub Packages and JitPack, see the README).
+Import the BOM once and leave the versions off the modules. All artifacts are on
+[Maven Central](https://central.sonatype.com/artifact/io.github.bnymndev/durable-agents-starter) under
+`io.github.bnymndev`; no repository configuration needed (GitHub Packages and JitPack carry them too,
+see the README).
 
 ```xml
 <dependencyManagement>

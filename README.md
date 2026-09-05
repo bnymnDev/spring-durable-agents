@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://github.com/bnymnDev/spring-durable-agents/actions/workflows/ci.yml"><img src="https://github.com/bnymnDev/spring-durable-agents/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <a href="https://github.com/bnymnDev/spring-durable-agents/releases/latest"><img src="https://img.shields.io/github/v/release/bnymnDev/spring-durable-agents?display_name=tag&color=0b7bd6" alt="Release"></a>
-  <a href="https://central.sonatype.com/namespace/io.github.bnymndev"><img src="https://img.shields.io/maven-central/v/io.github.bnymndev/durable-agents-starter?label=maven%20central&color=0b7bd6" alt="Maven Central"></a>
+  <a href="https://central.sonatype.com/artifact/io.github.bnymndev/durable-agents-starter"><img src="https://img.shields.io/maven-central/v/io.github.bnymndev/durable-agents-starter?label=maven%20central&color=0b7bd6" alt="Maven Central"></a>
   <a href="https://jitpack.io/#bnymnDev/spring-durable-agents"><img src="https://jitpack.io/v/bnymnDev/spring-durable-agents.svg" alt="JitPack"></a>
   <img src="https://img.shields.io/badge/Java-21%2B-007396?logo=openjdk&logoColor=white" alt="Java 21+">
   <img src="https://img.shields.io/badge/Spring%20Boot-4.1-6db33f?logo=springboot&logoColor=white" alt="Spring Boot 4.1">
@@ -123,7 +123,8 @@ No proxy on your agent class, no bytecode weaving, no broker, no server. One sta
 
 ### Getting it
 
-All modules share the group `io.github.bnymndev`. Import the BOM once and leave the versions off:
+All modules are on [Maven Central](https://central.sonatype.com/artifact/io.github.bnymndev/durable-agents-starter)
+under the group `io.github.bnymndev`. Import the BOM once and leave the versions off:
 
 ```xml
 <dependencyManagement>
@@ -168,8 +169,8 @@ testImplementation("io.github.bnymndev:durable-agents-test")
 <summary><b>Repositories: Maven Central, GitHub Packages, JitPack</b></summary>
 <br>
 
-Releases go to Maven Central. Every tag is also on **GitHub Packages** (needs a token with
-`read:packages`):
+Maven Central needs no extra repository configuration. Every tag is additionally on **GitHub
+Packages** (needs a token with `read:packages`):
 
 ```xml
 <repository>

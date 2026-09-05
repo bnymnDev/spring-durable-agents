@@ -7,6 +7,8 @@ All notable changes to this project are documented here. The format follows
 
 ## [0.1.1] — 2026-09-05
 
+First version on Maven Central: `io.github.bnymndev:durable-agents-*:0.1.1`.
+
 ### Added
 - `durable-agents-bom`: bill of materials pinning all modules.
 - Release workflow: GitHub release with jars and checksums, GitHub Packages, Maven Central when
