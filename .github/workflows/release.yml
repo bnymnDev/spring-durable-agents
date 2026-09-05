@@ -3,6 +3,11 @@ name: release
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to release (e.g. 0.1.0); the tag v<version> is created on the selected ref if it does not exist
+        required: true
 
 permissions:
   contents: write
@@ -14,6 +19,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Resolve tag
+        id: tag
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then echo "name=v${{ inputs.version }}" >> "$GITHUB_OUTPUT"; else echo "name=$GITHUB_REF_NAME" >> "$GITHUB_OUTPUT"; fi
+      - name: Create tag when missing
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${{ steps.tag.outputs.name }}"
+          if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
+            echo "tag $tag exists"
+          else
+            git config user.name "${GITHUB_ACTOR}"
+            git config user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+            git tag -a "$tag" -m "spring-durable-agents ${tag#v}"
+            git push origin "refs/tags/$tag"
+          fi
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -36,19 +59,21 @@ jobs:
       - name: Release notes
         id: notes
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          tag="${{ steps.tag.outputs.name }}"
+          version="${tag#v}"
           awk -v v="$version" '
             $0 ~ "^## \\[" v "\\]" { p=1; next }
             p && $0 ~ "^## \\[" { p=0 }
             p { print }' CHANGELOG.md > notes.md
-          echo "Artifacts: modules for Maven via GitHub Packages (repository \`https://maven.pkg.github.com/bnymnDev/spring-durable-agents\`, group \`io.github.bnymndev\`) and JitPack (\`com.github.bnymnDev.spring-durable-agents:<module>:$GITHUB_REF_NAME\`)." >> notes.md
+          echo "Artifacts: modules for Maven via GitHub Packages (repository \`https://maven.pkg.github.com/bnymnDev/spring-durable-agents\`, group \`io.github.bnymndev\`) and JitPack (\`com.github.bnymnDev.spring-durable-agents:<module>:$tag\`)." >> notes.md
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "$GITHUB_REF_NAME" dist/* \
+          tag="${{ steps.tag.outputs.name }}"
+          gh release create "$tag" dist/* \
             --repo "$GITHUB_REPOSITORY" \
-            --title "spring-durable-agents ${GITHUB_REF_NAME#v}" \
+            --title "spring-durable-agents ${tag#v}" \
             --notes-file notes.md \
             --verify-tag
 
