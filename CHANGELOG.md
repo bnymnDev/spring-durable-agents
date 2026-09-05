@@ -5,6 +5,16 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.1.1] — 2026-09-05
+
+### Added
+- `durable-agents-bom`: bill of materials pinning all modules.
+- Release workflow: GitHub release with jars and checksums, GitHub Packages, Maven Central when
+  credentials are configured; dispatchable with a version and creates the tag itself.
+
+### Fixed
+- Store contract tests compare JSON columns without whitespace (`jsonb` normalises it).
+
 ## [0.1.0] — 2026-09-05
 
 First release.
@@ -27,5 +37,6 @@ First release.
 - `durable-agents-starter`: autoconfiguration and `durable-agents.*` properties.
 - Examples `ticket-triage` and `order-refund`.
 
-[Unreleased]: https://github.com/bnymnDev/spring-durable-agents/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/bnymnDev/spring-durable-agents/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/bnymnDev/spring-durable-agents/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/bnymnDev/spring-durable-agents/releases/tag/v0.1.0
