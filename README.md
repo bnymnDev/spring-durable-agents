@@ -168,6 +168,32 @@ call that bean from run(), or use steps.run("name", () -> ...) inside the agent.
 </dependency>
 ```
 
+<details>
+<summary><b>Not on Maven Central yet? GitHub Packages and JitPack</b></summary>
+<br>
+
+GitHub Packages (needs a token with <code>read:packages</code> in your <code>settings.xml</code>):
+
+```xml
+<repository>
+  <id>github</id>
+  <url>https://maven.pkg.github.com/bnymnDev/spring-durable-agents</url>
+</repository>
+```
+
+JitPack, no token:
+
+```xml
+<repository><id>jitpack</id><url>https://jitpack.io</url></repository>
+<dependency>
+  <groupId>com.github.bnymnDev.spring-durable-agents</groupId>
+  <artifactId>durable-agents-starter</artifactId>
+  <version>v0.1.0</version>
+</dependency>
+```
+
+</details>
+
 **2.** Write the agent. Everything non-deterministic goes inside a step; `@Step` methods live on
 another bean.
 
