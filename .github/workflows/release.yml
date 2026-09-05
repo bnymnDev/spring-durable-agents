@@ -45,7 +45,25 @@ jobs:
       - name: Build
         run: ./mvnw -B -ntp -DskipTests package
       - name: Deploy to GitHub Packages
-        run: ./mvnw -B -ntp -s .mvn/settings.xml -DskipTests -Pgithub-packages deploy
+        # module by module: a 409 means this version of the module is already there (idempotent re-runs)
+        run: |
+          set +e
+          status=0
+          for m in . durable-agents-core durable-agents-store-jdbc durable-agents-spring-ai durable-agents-approval \
+                   durable-agents-actuator durable-agents-starter durable-agents-test; do
+            out=$(./mvnw -B -ntp -s .mvn/settings.xml -DskipTests -Pgithub-packages -N -f "$m/pom.xml" deploy 2>&1)
+            rc=$?
+            if [ $rc -ne 0 ]; then
+              if echo "$out" | grep -q "status code: 409"; then
+                echo "$m: already published, skipping"
+              else
+                echo "$out" | tail -40; status=1
+              fi
+            else
+              echo "$m: deployed"
+            fi
+          done
+          exit $status
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Collect artifacts
@@ -71,11 +89,16 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           tag="${{ steps.tag.outputs.name }}"
-          gh release create "$tag" dist/* \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "spring-durable-agents ${tag#v}" \
-            --notes-file notes.md \
-            --verify-tag
+          if gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$tag" dist/* --repo "$GITHUB_REPOSITORY" --clobber
+            gh release edit "$tag" --repo "$GITHUB_REPOSITORY" --notes-file notes.md
+          else
+            gh release create "$tag" dist/* \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "spring-durable-agents ${tag#v}" \
+              --notes-file notes.md \
+              --verify-tag
+          fi
 
   maven-central:
     name: Maven Central
