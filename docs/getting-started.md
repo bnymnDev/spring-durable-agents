@@ -2,17 +2,30 @@
 
 ## 1. Add the starter
 
+Import the BOM once and leave the versions off the modules. All artifacts are on Maven Central
+under `io.github.bnymndev` (and on GitHub Packages and JitPack, see the README).
+
 ```xml
-<dependency>
-  <groupId>io.github.bnymndev</groupId>
-  <artifactId>durable-agents-starter</artifactId>
-  <version>0.1.0</version>
-</dependency>
-<!-- optional modules -->
-<dependency><groupId>io.github.bnymndev</groupId><artifactId>durable-agents-spring-ai</artifactId><version>0.1.0</version></dependency>
-<dependency><groupId>io.github.bnymndev</groupId><artifactId>durable-agents-approval</artifactId><version>0.1.0</version></dependency>
-<dependency><groupId>io.github.bnymndev</groupId><artifactId>durable-agents-actuator</artifactId><version>0.1.0</version></dependency>
-<dependency><groupId>io.github.bnymndev</groupId><artifactId>durable-agents-test</artifactId><version>0.1.0</version><scope>test</scope></dependency>
+<dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>io.github.bnymndev</groupId>
+      <artifactId>durable-agents-bom</artifactId>
+      <version>0.1.1</version>
+      <type>pom</type>
+      <scope>import</scope>
+    </dependency>
+  </dependencies>
+</dependencyManagement>
+
+<dependencies>
+  <dependency><groupId>io.github.bnymndev</groupId><artifactId>durable-agents-starter</artifactId></dependency>
+  <!-- optional modules -->
+  <dependency><groupId>io.github.bnymndev</groupId><artifactId>durable-agents-spring-ai</artifactId></dependency>
+  <dependency><groupId>io.github.bnymndev</groupId><artifactId>durable-agents-approval</artifactId></dependency>
+  <dependency><groupId>io.github.bnymndev</groupId><artifactId>durable-agents-actuator</artifactId></dependency>
+  <dependency><groupId>io.github.bnymndev</groupId><artifactId>durable-agents-test</artifactId><scope>test</scope></dependency>
+</dependencies>
 ```
 
 The starter needs a `DataSource` (PostgreSQL in production, H2 for local runs). The bundled Flyway

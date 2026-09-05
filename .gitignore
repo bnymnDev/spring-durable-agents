@@ -20,3 +20,4 @@ Thumbs.db
 # local env
 .env
 *.local.yml
+.flattened-pom.xml

@@ -49,7 +49,7 @@ jobs:
         run: |
           set +e
           status=0
-          for m in . durable-agents-core durable-agents-store-jdbc durable-agents-spring-ai durable-agents-approval \
+          for m in . durable-agents-bom durable-agents-core durable-agents-store-jdbc durable-agents-spring-ai durable-agents-approval \
                    durable-agents-actuator durable-agents-starter durable-agents-test; do
             out=$(./mvnw -B -ntp -s .mvn/settings.xml -DskipTests -Pgithub-packages -N -f "$m/pom.xml" deploy 2>&1)
             rc=$?

@@ -6,7 +6,7 @@
 
   <groupId>io.github.bnymndev</groupId>
   <artifactId>spring-durable-agents</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <packaging>pom</packaging>
 
   <name>spring-durable-agents</name>
@@ -31,11 +31,18 @@
 
   <scm>
     <url>https://github.com/bnymnDev/spring-durable-agents</url>
-    <connection>scm:git:git://github.com/bnymnDev/spring-durable-agents.git</connection>
+    <connection>scm:git:https://github.com/bnymnDev/spring-durable-agents.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/bnymnDev/spring-durable-agents.git</developerConnection>
+    <tag>HEAD</tag>
   </scm>
 
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/bnymnDev/spring-durable-agents/issues</url>
+  </issueManagement>
+
   <modules>
+    <module>durable-agents-bom</module>
     <module>durable-agents-core</module>
     <module>durable-agents-store-jdbc</module>
     <module>durable-agents-spring-ai</module>
