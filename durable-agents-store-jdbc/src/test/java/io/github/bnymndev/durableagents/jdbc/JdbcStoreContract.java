@@ -60,11 +60,11 @@ abstract class JdbcStoreContract {
 				"instance-a", now.plusSeconds(30), "T-1");
 		this.runs.insert(run);
 
-		assertThat(this.runs.find(run.id())).contains(run);
+		assertSameRun(this.runs.find(run.id()).orElseThrow(), run);
 
 		RunRecord done = run.withOutput("{\"ok\":true}", now.plusSeconds(1));
 		this.runs.update(done);
-		assertThat(this.runs.find(run.id())).contains(done);
+		assertSameRun(this.runs.find(run.id()).orElseThrow(), done);
 		assertThat(this.runs.countByAgentAndStatus()).containsEntry("triage", Map.of(RunStatus.COMPLETED, 1L));
 	}
 
@@ -130,8 +130,10 @@ abstract class JdbcStoreContract {
 		this.steps.save(completed);
 
 		List<StepRecord> all = this.steps.findByRun(runId);
-		assertThat(all).containsExactly(first, completed);
-		assertThat(this.steps.find(runId, failed.stepKey())).contains(completed);
+		assertThat(all).hasSize(2);
+		assertSameStep(all.get(0), first);
+		assertSameStep(all.get(1), completed);
+		assertSameStep(this.steps.find(runId, failed.stepKey()).orElseThrow(), completed);
 		assertThat(this.steps.find(runId, "missing")).isEmpty();
 
 		this.runs.deleteFinishedBefore(now.plusSeconds(1));
@@ -139,6 +141,23 @@ abstract class JdbcStoreContract {
 		this.runs.update(this.runs.find(runId).orElseThrow().withOutput("1", now));
 		assertThat(this.runs.deleteFinishedBefore(now.plusSeconds(1))).isEqualTo(1);
 		assertThat(this.steps.findByRun(runId)).isEmpty();
+	}
+
+	/** jsonb normalises whitespace, so JSON columns are compared without it. */
+	private static void assertSameRun(RunRecord actual, RunRecord expected) {
+		assertThat(actual).usingRecursiveComparison().ignoringFields("input", "output").isEqualTo(expected);
+		assertThat(compact(actual.input())).isEqualTo(compact(expected.input()));
+		assertThat(compact(actual.output())).isEqualTo(compact(expected.output()));
+	}
+
+	private static void assertSameStep(StepRecord actual, StepRecord expected) {
+		assertThat(actual).usingRecursiveComparison().ignoringFields("input", "output").isEqualTo(expected);
+		assertThat(compact(actual.input())).isEqualTo(compact(expected.input()));
+		assertThat(compact(actual.output())).isEqualTo(compact(expected.output()));
+	}
+
+	private static String compact(String json) {
+		return (json != null) ? json.replaceAll("\\s+", "") : null;
 	}
 
 	@Test
