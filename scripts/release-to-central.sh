@@ -28,12 +28,36 @@ if ! grep -q "<id>central</id>" ~/.m2/settings.xml 2>/dev/null; then
   echo "✗ no <server><id>central</id> in ~/.m2/settings.xml (Central Portal user token)" >&2
   exit 1
 fi
-if ! gpg --list-secret-keys --keyid-format long 2>/dev/null | grep -q '^sec'; then
-  echo "✗ no GPG secret key available" >&2
+# Find a gpg that actually holds a secret key. On Windows, Git Bash ships its own gpg with an empty
+# keyring while the signing key usually lives in Gpg4win (Kleopatra); prefer that one.
+gpg_bin=""
+candidates=("${GPG_EXECUTABLE:-}" gpg gpg2
+  "/c/Program Files (x86)/GnuPG/bin/gpg.exe" "/c/Program Files/GnuPG/bin/gpg.exe"
+  "/c/Program Files (x86)/Gpg4win/bin/gpg.exe" "/c/Program Files/Git/usr/bin/gpg.exe")
+for c in "${candidates[@]}"; do
+  [ -n "$c" ] || continue
+  if command -v "$c" >/dev/null 2>&1 || [ -x "$c" ]; then
+    if "$c" --list-secret-keys --keyid-format long 2>/dev/null | grep -q '^sec'; then
+      gpg_bin="$c"; break
+    fi
+  fi
+done
+if [ -z "$gpg_bin" ]; then
+  cat >&2 <<'ERR'
+✗ no GPG secret key found in any known gpg.
+  - Windows: install Gpg4win (https://gpg4win.org), import or create the key in Kleopatra, or point
+    the script at your gpg:   GPG_EXECUTABLE="/c/Program Files (x86)/GnuPG/bin/gpg.exe" scripts/release-to-central.sh 0.1.1
+  - Key on another machine:  gpg --export-secret-keys -a KEYID > key.asc  (there)  ·  gpg --import key.asc  (here)
+  - No key yet:              gpg --full-generate-key   (RSA 4096, your e-mail)   then publish it:
+                             gpg --keyserver keyserver.ubuntu.com --send-keys KEYID
+ERR
   exit 1
 fi
 command -v java >/dev/null || { echo "✗ java not found" >&2; exit 1; }
-echo "✓ central server configured, GPG key present, $(java -version 2>&1 | head -1)"
+gpg_key="$("$gpg_bin" --list-secret-keys --keyid-format long 2>/dev/null | awk '/^sec/{print $2; exit}')"
+echo "✓ central server configured, GPG key $gpg_key via $gpg_bin, $(java -version 2>&1 | head -1)"
+gpg_mvn_args=(-Dgpg.executable="$gpg_bin")
+export GPG_TTY="${GPG_TTY:-$(tty 2>/dev/null || true)}"
 
 echo "▶ fetching tag $tag"
 git fetch --tags origin
@@ -63,7 +87,7 @@ extra=""
 if [ "$publish" = "--publish" ]; then
   extra="-DautoPublish=true"
 fi
-./mvnw -B -ntp -Prelease -DskipTests $extra deploy
+./mvnw -B -ntp -Prelease -DskipTests $extra "${gpg_mvn_args[@]}" deploy
 
 cat <<MSG
 
