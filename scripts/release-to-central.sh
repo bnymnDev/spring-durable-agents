@@ -58,6 +58,21 @@ gpg_key="$("$gpg_bin" --list-secret-keys --keyid-format long 2>/dev/null | awk '
 echo "✓ central server configured, GPG key $gpg_key via $gpg_bin, $(java -version 2>&1 | head -1)"
 gpg_mvn_args=(-Dgpg.executable="$gpg_bin")
 export GPG_TTY="${GPG_TTY:-$(tty 2>/dev/null || true)}"
+# The gpg plugin signs in loopback mode. Without a pinentry (typical for Git Bash on Windows) gpg
+# cannot ask for the passphrase itself, so we ask once and hand it over via the plugin's env variable.
+if [ -z "${MAVEN_GPG_PASSPHRASE:-}" ]; then
+  read -r -s -p "GPG passphrase for $gpg_key (leave empty if the key has none): " MAVEN_GPG_PASSPHRASE; echo
+  export MAVEN_GPG_PASSPHRASE
+fi
+echo "▶ testing signature"
+if ! echo test | "$gpg_bin" --batch --yes --pinentry-mode loopback --passphrase "$MAVEN_GPG_PASSPHRASE" \
+     --local-user "$gpg_key" --armor --detach-sign --output /dev/null - 2>/tmp/gpg-test.err; then
+  cat /tmp/gpg-test.err >&2
+  echo "✗ gpg could not sign with $gpg_key. Wrong passphrase, or loopback pinentry is disallowed:" >&2
+  echo "  add 'allow-loopback-pinentry' to ~/.gnupg/gpg-agent.conf and run: gpgconf --kill gpg-agent" >&2
+  exit 1
+fi
+echo "✓ signature test passed"
 
 echo "▶ fetching tag $tag"
 git fetch --tags origin
