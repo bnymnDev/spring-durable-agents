@@ -54,9 +54,20 @@ ERR
   exit 1
 fi
 command -v java >/dev/null || { echo "✗ java not found" >&2; exit 1; }
-gpg_key="$("$gpg_bin" --list-secret-keys --keyid-format long 2>/dev/null | awk '/^sec/{print $2; exit}')"
+# GPG_KEYID selects the signing key when several exist (default: the first secret key listed)
+if [ -n "${GPG_KEYID:-}" ]; then
+  gpg_key="$GPG_KEYID"
+else
+  gpg_key="$("$gpg_bin" --list-secret-keys --keyid-format long 2>/dev/null | awk '/^sec/{print $2; exit}')"
+fi
+gpg_key="${gpg_key##*/}"
+key_count="$("$gpg_bin" --list-secret-keys --keyid-format long 2>/dev/null | grep -c '^sec' || true)"
+if [ "$key_count" -gt 1 ] && [ -z "${GPG_KEYID:-}" ]; then
+  echo "ℹ $key_count secret keys found, using $gpg_key. Pick another with GPG_KEYID=<keyid>:" >&2
+  "$gpg_bin" --list-secret-keys --keyid-format long 2>/dev/null | grep -E '^(sec|uid)' >&2
+fi
 echo "✓ central server configured, GPG key $gpg_key via $gpg_bin, $(java -version 2>&1 | head -1)"
-gpg_mvn_args=(-Dgpg.executable="$gpg_bin")
+gpg_mvn_args=(-Dgpg.executable="$gpg_bin" -Dgpg.keyname="$gpg_key")
 export GPG_TTY="${GPG_TTY:-$(tty 2>/dev/null || true)}"
 # The gpg plugin signs in loopback mode. Without a pinentry (typical for Git Bash on Windows) gpg
 # cannot ask for the passphrase itself, so we ask once and hand it over via the plugin's env variable.
