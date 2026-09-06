@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/bnymnDev/spring-durable-agents/discussions
+    about: Ask how to do something or discuss a design before opening an issue.
+  - name: Security vulnerability
+    url: https://github.com/bnymnDev/spring-durable-agents/security/advisories/new
+    about: Report privately through a security advisory, not a public issue.

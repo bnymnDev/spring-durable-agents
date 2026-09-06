@@ -77,7 +77,7 @@ durable in the database you already have, and otherwise stays out of the way.
 <tr>
 <td width="33%" valign="top">
 
-**🧱 Every step is a row**
+**Every step is a row**
 
 Each LLM call, tool call and side effect is a step with a deterministic key in PostgreSQL. A
 completed step never runs again. Crash, redeploy, scale to zero: the next instance replays the
@@ -86,7 +86,7 @@ history and continues where it stopped.
 </td>
 <td width="33%" valign="top">
 
-**🙋 Humans in the loop**
+**Humans in the loop**
 
 `steps.approval("SUPPORT_LEAD", ofDays(1))` suspends the run and releases the thread. Someone with
 the role approves through REST, a Slack bot or a Modulith event; the run wakes up where it stopped.
@@ -95,7 +95,7 @@ Rejections and timeouts are first-class.
 </td>
 <td width="33%" valign="top">
 
-**📈 Boring to operate**
+**Boring to operate**
 
 `/actuator/agents` shows every run with its step timeline. Micrometer timers and token counters, one
 OpenTelemetry span per step with GenAI attributes, `runId` in every log line. A test slice with a
@@ -416,12 +416,12 @@ steps.run("name", () -> ...) inside the agent.
 
 | | Spring AI alone | Temporal | DBOS | LangGraph4j | **spring-durable-agents** |
 |---|:-:|:-:|:-:|:-:|:-:|
-| Survives a crash mid-run | – | ✔ | ✔ | with a checkpointer | ✔ |
+| Survives a crash mid-run | – | yes | yes | with a checkpointer | yes |
 | Needs a server or broker | – | server + workers | cloud or Conductor | – | **no, your PostgreSQL** |
 | Programming model | plain Java | workflows + activities | `@Workflow`/`@Step` | graph of nodes | `Agent.run(input, steps)` |
 | Human approval | build it | signals | build it | interrupt | `steps.approval(role, timeout)` + REST |
-| LLM calls recorded with tokens | via observation | – | – | – | ✔ per call, replayable |
-| Tool / MCP calls durable | – | as activities | as steps | – | ✔ wrapped automatically |
+| LLM calls recorded with tokens | via observation | – | – | – | yes, per call, replayable |
+| Tool / MCP calls durable | – | as activities | as steps | – | yes, wrapped automatically |
 | Spring Boot integration | native | community | community | community | **native**: starter, Actuator, slice tests |
 | Determinism between steps | – | required | required | – | required |
 | Scope | model access | general workflow engine | general durable execution | agent graphs | durable agents on Spring |
