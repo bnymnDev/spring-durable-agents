@@ -1,0 +1,47 @@
+name: Bug report
+description: Something does not behave as documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Questions and ideas are better placed in
+        [Discussions](https://github.com/bnymnDev/spring-durable-agents/discussions).
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: A minimal agent, configuration or test that shows the problem.
+      render: java
+  - type: textarea
+    id: timeline
+    attributes:
+      label: Step timeline
+      description: Output of `/actuator/agents/runs/{id}` or the relevant `agent_step` rows, when you have them.
+      render: json
+  - type: input
+    id: version
+    attributes:
+      label: spring-durable-agents version
+      placeholder: 0.1.1
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Java, Spring Boot and Spring AI versions, database (PostgreSQL, H2, memory).
+      placeholder: Java 21, Spring Boot 4.1.1, Spring AI 2.0.1, PostgreSQL 16
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Relevant log lines. Please remove secrets and prompts you do not want public.
+      render: text
