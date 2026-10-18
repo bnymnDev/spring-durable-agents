@@ -74,7 +74,7 @@
     <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
     <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
     <flatten-maven-plugin.version>1.8.0</flatten-maven-plugin.version>
-    <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
+    <central-publishing-maven-plugin.version>0.12.0</central-publishing-maven-plugin.version>
     <!-- -DautoPublish=true publishes in the Central Portal without the manual confirmation -->
     <autoPublish>false</autoPublish>
   </properties>
