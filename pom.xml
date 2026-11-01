@@ -59,9 +59,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-    <spring-boot.version>4.1.1</spring-boot.version>
-    <spring-ai.version>2.0.1</spring-ai.version>
-    <spring-modulith.version>2.1.1</spring-modulith.version>
+    <spring-boot.version>4.1.2</spring-boot.version>
+    <spring-ai.version>2.0.2</spring-ai.version>
+    <spring-modulith.version>2.1.2</spring-modulith.version>
     <archunit.version>1.5.0</archunit.version>
     <context-propagation.version>1.2.1</context-propagation.version>
 
